@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎来到cuit</title>
+</head>
+<body>
+
+<img src="../qr.png">
+
+<script>
+    function timedGetText(  )
+    {
+    var request = new XMLHttpRequest();
+    request.open("GET","/flash/");
+    request.send();
+        location.reload(true);
+}
+   window.setInterval("timedGetText()",3000);
+    </script>
+</html>
