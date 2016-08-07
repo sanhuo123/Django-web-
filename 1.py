@@ -55,18 +55,15 @@ class data(object):
             person=re.findall(u'<dt>联 系 人：</dt>\s+<dd>(.*?)</dd>',page)
             phone=re.findall('''<dd class="redtelphone"><img src="(.*?)"></dd>|<dd class="redtelphone">(.*?)</dd>''',page)
             household=re.findall(u'<h2>房屋概况</h2>\s*?<div class="des">\s*?<strong>([\s\S]+)<div class="cr_bottom_right">',page)
-
             k=''.join(household)
-            k2=re.findall('''(<span .*?">)''',k)
-            k3=re.findall('''(<p .*?">)''',k)
-            k4=re.findall('''(<div .*?</div>)''',k)
-            k5=re.findall('''(<font.*?">)''',k)
-            k7=re.findall('''(<b.*?/>)''',k)
-            k8=re.findall('''(<ul.*?">)''',k)
-            k9=re.findall('''(style=.*?">)''',k)
-            k6=re.findall('''data-original="(.*?)"''',page)
-            for i in ('</strong>', '<br />','<p>','<br/>','</p>','</span>','</font>','&nbsp;','&nbsp', '</b>','<b>','<strong>','</ul>','<h2 ','<b ','<span>'):
-                k = k.replace(i,'')
+            k2=re.findall('''(<span.*?">)''', k)
+            k3=re.findall('''(<p.*?">)''', k)
+            k4=re.findall('''(<div.*?</div>)''', k)
+            k5=re.findall('''(<font.*?">)''', k)
+            k7=re.findall('''(<b.*?/>)''', k)
+            k8=re.findall('''(<ul.*?">)''', k)
+            k9=re.findall('''(style=.*?">)''', k)
+            k6=re.findall('''data-original="(.*?)"''', page)
             for i in k2:
                 k = k.replace(i,'')
             for i in k3:
@@ -80,6 +77,8 @@ class data(object):
             for i in k8:
                 k = k.replace(i,'')
             for i in k9:
+                k = k.replace(i,'')
+            for i in ('</strong>', '<br />','<p>','<br/>','</p>','</span>','</font>','&nbsp;','&nbsp', '</b>','<b>','<strong>','</ul>','<h2 ','<b ','<span>',):
                 k = k.replace(i,'')
     #'''import sqlite3             #保存图片到sqllite3
     #    import StringIO
@@ -105,24 +104,28 @@ class data(object):
      #           '''
 
             if money[1] and phone[0]:
-                print ''.join(name),'编号：',''.join(num),'\n发布时间：',''.join(times),'\n售价：', \
-                ''.join(money[0]),'万元',''.join(money[1]),'\n户型面积：',''.join(many),'\n小区名称：',''.join(xiaoquming), \
-                '\n小区地址：',''.join(xiaoquadd).replace('-',' '),'\n房屋概况：',''.join(house),'\n所处楼层：',''.join(loucen), \
-                '\n联 系 人：',''.join(person),'\n联系电话:',''.join(phone[0]),'\n概况：',k,'房景图:',' '.join(k6),'\n'
+                resulta='名称:'+ ''.join(name)+'  编号：'+''.join(num)+'\r\n发布时间：'+''.join(times)+'\r\n售价：'+ \
+                ''.join(money[0])+'万元'+''.join(money[1])+'\r\n户型面积：'+''.join(many)+'\r\n小区名称：'+''.join(xiaoquming)+ \
+                '\r\n小区地址：'+''.join(xiaoquadd).replace('-',' ')+'\r\n房屋概况：'+''.join(house)+'\r\n所处楼层：'+''.join(loucen)+ \
+                '\r\n联 系 人：'+''.join(person)+'\r\n联系电话:'+''.join(phone[0])+'\r\n概况：'+k+'\r\n房景图:'+' '.join(k6)+'\r\n\r\n'
+                print resulta
+                filetowrite.write(resulta)
         except:
             if phone[0]:
-                print ''.join(name),'编号：',''.join(num),'\n发布时间：',''.join(times),'\n售价：', \
-                ''.join(money[0]),'\n户型面积：',''.join(many),'\n小区名称：',''.join(xiaoquming), \
-                '\n小区地址：',''.join(xiaoquadd).replace('-',' '),'\n房屋概况：',''.join(house),'\n所处楼层：',''.join(loucen), \
-                '\n联 系 人：',''.join(person),'\n联系电话:',''.join(phone[0]),'\n概况：',k,'房景图:',' '.join(k6),'\n'
+                resultb='名称:'+ ''.join(name)+'  编号：'+''.join(num)+'\r\n发布时间：'+''.join(times)+'\r\n售价：'+ \
+                ''.join(money[0])+'\r\n户型面积：'+''.join(many)+'\r\n小区名称：'+''.join(xiaoquming)+ \
+                '\r\n小区地址：'+''.join(xiaoquadd).replace('-',' ')+'\r\n房屋概况：'+''.join(house)+'\r\n所处楼层：'+''.join(loucen)+ \
+                '\r\n联 系 人：'+''.join(person)+'\r\n联系电话:'+''.join(phone[0])+'\r\n概况：'+k+'\r\n房景图:'+' '.join(k6)+'\r\n\r\n'
+                print resultb
+                filetowrite.write(resultb)
         finally:
             print '线程结束',threading.active_count()
             raise(SystemExit)
 
 def main():
     duowan=link()
-    threading.Thread(target=duowan.citylink,args=()).start()        #全国
-    #threading.Thread(target=duowan.getpage,args=('http://cd.grfy.net/sale',)).start()  #成都
+    #threading.Thread(target=duowan.citylink,args=()).start()        #全国
+    threading.Thread(target=duowan.getpage,args=('http://cd.grfy.net/sale',)).start()  #成都
     lpl=data()
     i=0
     time.sleep(3)
@@ -134,16 +137,18 @@ def main():
                 i=i+1
                 print threading.active_count(),'----------------------------',len(duowan.url),'-----',i,time.time()-t1
         except:
-            if threading.active_count()<=2:
+            if threading.active_count()<2:
                 time.sleep(2)
                 break
             continue
 if __name__ == '__main__':
+    filetowrite=open('a.txt', 'wb')
   #  f=open('a.txt','w')
   #  import sys
    # old=sys.stdout #将当前系统输出储存到一个临时变量中
    # sys.stdout=f  #输出重定向到文件
     main()
+    filetowrite.close()
    # sys.stdout=old #还原原系统输出
    # f.close()
     print '进程结束！'
